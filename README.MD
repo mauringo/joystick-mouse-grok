@@ -23,15 +23,7 @@ Yes — every single line of code, every feature, every pixel — 100% AI-vibeco
 - Beautiful custom icon  
 - Fully portable — only 3 files needed
 
----
 
-###Files
-
-joystick-mouse-grok/
-├── joystick_mouse.py         ← Main script (Grok masterpiece)
-├── icon.png                  ← Custom icon (also by Grok)
-├── joystick_config.json      ← Auto-generated on first save
-└── README.md                 ← This file
 
 ## Joystick Script Requirements
 
