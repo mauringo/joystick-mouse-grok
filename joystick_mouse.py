@@ -80,7 +80,8 @@ def load_config():
         try:
             with open(CONFIG_FILE, "r") as f:
                 return json.load(f), True
-        except: pass
+        except:
+            pass
     return {}, False
 
 def save_config(params):
@@ -89,7 +90,8 @@ def save_config(params):
         with open(CONFIG_FILE, "w") as f:
             json.dump(saveable, f, indent=2)
         return True
-    except: return False
+    except:
+        return False
 
 # =============================================================================
 # LOG – BIGGER BOX
@@ -103,7 +105,8 @@ class LogDisplay:
         ts = time.strftime("%H:%M")
         short = msg[:56] + "..." if len(msg) > 59 else msg
         self.logs.append(f"[{ts}] {short}")
-        if len(self.logs) > 14: self.logs.pop(0)
+        if len(self.logs) > 14:
+            self.logs.pop(0)
 
     def render(self, screen):
         # Bigger log box
@@ -130,7 +133,9 @@ class Joy:
         self.nbtn = 0
 
     def init(self):
-        if pygame.joystick.get_count() <= self.idx: return False
+        if pygame.joystick.get_count() <= self.idx:
+            self.connected = False
+            return False
         try:
             if not self.j:
                 self.j = pygame.joystick.Joystick(self.idx)
@@ -139,13 +144,18 @@ class Joy:
             self.name = self.j.get_name()
             self.nbtn = self.j.get_numbuttons()
             return True
-        except: 
+        except:
             self.connected = False
             return False
 
-    def a(self, x): return self.j.get_axis(x) if self.connected else 0.0
-    def b(self, x): return self.j.get_button(x) if self.connected else False
-    def h(self):    return self.j.get_hat(0) if self.connected else (0,0)
+    def a(self, x):
+        return self.j.get_axis(x) if self.connected else 0.0
+
+    def b(self, x):
+        return self.j.get_button(x) if self.connected else False
+
+    def h(self):
+        return self.j.get_hat(0) if self.connected else (0,0)
 
 # =============================================================================
 # MAIN
@@ -172,7 +182,8 @@ def main():
     if ICON_FILE.exists():
         try:
             pygame.display.set_icon(pygame.image.load(str(ICON_FILE)))
-        except: pass
+        except:
+            pass
 
     screen = pygame.display.set_mode((args.screen_width, args.screen_height))
     pygame.display.set_caption(args.window_title)
@@ -181,9 +192,14 @@ def main():
     joy = Joy(args.joystick_index)
     joy.init()
 
-    subprocess.Popen(['ydotoold'], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    # Start ydotoold and keep a handle; no blocking wait here
+    ydotoold_proc = subprocess.Popen(
+        ['ydotoold'],
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL
+    )
+    # Give it a moment to start
     time.sleep(2.2)
-    atexit.register(lambda: subprocess.run(['sudo', 'pkill', '-f', 'ydotoold'], timeout=3))
 
     log = LogDisplay()
     log.add("Ready – Btn10 = Config")
@@ -200,7 +216,8 @@ def main():
     running = True
     while running:
         for e in pygame.event.get():
-            if e.type == pygame.QUIT: running = False
+            if e.type == pygame.QUIT:
+                running = False
 
         joy.init()
         hat = joy.h()
@@ -211,7 +228,8 @@ def main():
             if p and not was:
                 btn_state[key] = True
                 return True
-            if not p: btn_state[key] = False
+            if not p:
+                btn_state[key] = False
             return False
 
         if edge("cfg", args.btn_enter_config):
@@ -222,8 +240,10 @@ def main():
             now = time.time()
             if hat != prev_hat and now - last_hat_time > 0.18:
                 last_hat_time = now
-                if hat == (0,1):   sel = (sel + 1) % len(CONFIG_ITEMS)
-                if hat == (0,-1): sel = (sel - 1) % len(CONFIG_ITEMS)
+                if hat == (0,1):
+                    sel = (sel + 1) % len(CONFIG_ITEMS)
+                if hat == (0,-1):
+                    sel = (sel - 1) % len(CONFIG_ITEMS)
                 if hat in ((1,0), (-1,0)):
                     k, step, mn, mx, _ = CONFIG_ITEMS[sel]
                     val = getattr(args, k)
@@ -238,10 +258,18 @@ def main():
                     log.add("SAVED joystick_config.json")
                 config_mode = False
         else:
-            if edge("stop", args.btn_stop_mouse):  mouse_active = False; log.add("MOUSE STOPPED")
-            if edge("resume", args.btn_resume_mouse): mouse_active = True; log.add("MOUSE RESUMED")
-            if edge("mute", args.btn_mute): subprocess.run(['ydotool','key','113:1','113:0']); log.add("MUTE")
-            if edge("play", args.btn_play_pause): subprocess.run(['ydotool','key','164:1','164:0']); log.add("PLAY/PAUSE")
+            if edge("stop", args.btn_stop_mouse):
+                mouse_active = False
+                log.add("MOUSE STOPPED")
+            if edge("resume", args.btn_resume_mouse):
+                mouse_active = True
+                log.add("MOUSE RESUMED")
+            if edge("mute", args.btn_mute):
+                subprocess.run(['ydotool','key','113:1','113:0'])
+                log.add("MUTE")
+            if edge("play", args.btn_play_pause):
+                subprocess.run(['ydotool','key','164:1','164:0'])
+                log.add("PLAY/PAUSE")
 
             if hat != prev_hat:
                 cmds = {(0,-1):114, (0,1):115, (1,0):163, (-1,0):165}
@@ -251,8 +279,10 @@ def main():
             if mouse_active and joy.connected:
                 raw_x = joy.a(args.mouse_x_axis)
                 raw_y = joy.a(args.mouse_y_axis)
-                if abs(raw_x) < args.deadzone: raw_x = 0
-                if abs(raw_y) < args.deadzone: raw_y = 0
+                if abs(raw_x) < args.deadzone:
+                    raw_x = 0
+                if abs(raw_y) < args.deadzone:
+                    raw_y = 0
 
                 vx += raw_x * args.acceleration
                 vy += raw_y * args.acceleration
@@ -273,9 +303,11 @@ def main():
                     subprocess.run(['ydotool','click','0xC1'])
 
                 if joy.b(args.btn_left_drag) and not dragging:
-                    subprocess.run(['ydotool','click','0x40']); dragging = True
+                    subprocess.run(['ydotool','click','0x40'])
+                    dragging = True
                 elif not joy.b(args.btn_left_drag) and dragging:
-                    subprocess.run(['ydotool','click','0xB0']); dragging = False
+                    subprocess.run(['ydotool','click','0xB0'])
+                    dragging = False
 
         prev_hat = hat
 
@@ -298,7 +330,8 @@ def main():
 
         pressed = [i for i in range(joy.nbtn) if joy.b(i)]
         btn_txt = "PRESSED: " + (", ".join(map(str, pressed)) if pressed else "none")
-        screen.blit(pygame.font.Font(None,30).render(btn_txt, True, (255,255,100) if pressed else (130,130,130)), (20,180))
+        screen.blit(pygame.font.Font(None,30).render(btn_txt, True,
+                    (255,255,100) if pressed else (130,130,130)), (20,180))
 
         if config_mode:
             screen.blit(pygame.font.Font(None,64).render("CONFIG MODE", True, (255,220,0)), (220,80))
@@ -307,7 +340,8 @@ def main():
                 val = getattr(args, k)
                 col = (255,255,120) if i==sel else (240,240,240)
                 pref = "> " if i==sel else "  "
-                screen.blit(pygame.font.Font(None,36).render(f"{pref}{k.replace('_',' ').title():14}: {val:.1f}", True, col), (120,y))
+                screen.blit(pygame.font.Font(None,36).render(
+                    f"{pref}{k.replace('_',' ').title():14}: {val:.1f}", True, col), (120,y))
                 y += 50
         else:
             rx = 480
@@ -327,8 +361,12 @@ def main():
             bw = 300
             for i in range(4):
                 y = 260 + i * 55
-                val = joy.a(i) if i < joy.j.get_numaxes() else 0.0 if joy.connected else 0.0
-                screen.blit(pygame.font.Font(None,24).render(f"Axis {i}: {val:+.3f}", True, (180,255,180)), (rx, y))
+                if joy.connected and joy.j is not None and i < joy.j.get_numaxes():
+                    val = joy.a(i)
+                else:
+                    val = 0.0
+                screen.blit(pygame.font.Font(None,24).render(
+                    f"Axis {i}: {val:+.3f}", True, (180,255,180)), (rx, y))
                 fill = int((val + 1) * bw / 2)
                 pygame.draw.rect(screen, (80,80,100), (rx, y+28, bw, 20), 2)
                 pygame.draw.rect(screen, (100,200,255), (rx, y+28, fill, 20))
@@ -337,7 +375,25 @@ def main():
         pygame.display.flip()
         clock.tick(args.fps)
 
+    # Clean up
     pygame.quit()
+
+    # Kill ydotoold without using a blocking run() in atexit
+    try:
+        # First, try to terminate the process we started
+        if ydotoold_proc and ydotoold_proc.poll() is None:
+            ydotoold_proc.terminate()
+            try:
+                ydotoold_proc.wait(timeout=1)
+            except subprocess.TimeoutExpired:
+                ydotoold_proc.kill()
+
+        # As a fallback, also pkill, but without blocking indefinitely
+        subprocess.Popen(['sudo', 'pkill', '-f', 'ydotoold'],
+                         stdout=subprocess.DEVNULL,
+                         stderr=subprocess.DEVNULL)
+    except Exception:
+        pass
 
 if __name__ == "__main__":
     main()
