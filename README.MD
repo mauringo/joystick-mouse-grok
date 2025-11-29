@@ -28,11 +28,10 @@ Yes — every single line of code, every feature, every pixel — 100% AI-vibeco
 ###Files
 
 joystick-mouse-grok/
-├── joystick_mouse.py         # Main script (Grok masterpiece)
-├── icon.png                  # Custom icon 
-├── joystick_config.json      # Auto-generated on first save
-└── README.md                 # This file
-text---
+├── joystick_mouse.py         ← Main script (Grok masterpiece)
+├── icon.png                  ← Custom icon (also by Grok)
+├── joystick_config.json      ← Auto-generated on first save
+└── README.md                 ← This file
 
 ## Joystick Script Requirements
 
