@@ -38,6 +38,7 @@ Yes — every single line of code, every feature, every pixel — 100% AI-vibeco
 
 
 ## Clone and build ydotool
+
 git clone https://github.com/ReimuNotMoe/ydotool.git
 cd ydotool
 mkdir build && cd build
