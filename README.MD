@@ -26,6 +26,7 @@ Yes — every single line of code, every feature, every pixel — 100% AI-vibeco
 ---
 
 ###Files
+
 joystick-mouse-grok/
 ├── joystick_mouse.py         # Main script (Grok masterpiece)
 ├── icon.png                  # Custom icon 
