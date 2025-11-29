@@ -30,7 +30,7 @@ Yes — every single line of code, every feature, every pixel — 100% AI-vibeco
 | Component       | Description                                      | Installation/Notes                          |
 |-----------------|--------------------------------------------------|---------------------------------------------|
 | Python 3        | Required runtime for script execution            | Pre-installed on most Linux/macOS systems  |
-| pygame          | Handles joystick input, GUI display, events      | `pip install pygame` [12]                |
+| pygame          | Handles joystick input, GUI display, events      | `pip3 install pygame==2.6.1`              |
 | ydotool         | Simulates mouse/keyboard events (Linux daemon)   | see down |
 | Joystick Device | Hardware accessible via pygame joystick API      | OS drivers (Linux: evdev permissions)  |
 | joystick_config.json | Settings file (auto-generated)               | Created in script directory on first save  |
