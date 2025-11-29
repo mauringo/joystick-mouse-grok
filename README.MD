@@ -23,6 +23,8 @@ Yes — every single line of code, every feature, every pixel — 100% AI-vibeco
 - Beautiful custom icon  
 - Fully portable — only 3 files needed
 
+![alt text](images/screen.png)
+
 
 
 ## Joystick Script Requirements
